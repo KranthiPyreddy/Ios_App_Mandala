@@ -5,14 +5,17 @@ import UIKit
 
 class MoodSelectionViewController: UIViewController {
     //Adding mood properties
-    @IBOutlet var stackView: UIStackView!
+    //Replacing the
+    //stack view with an image selector
+    @IBOutlet var moodSelector: ImageSelector!
+    //@IBOutlet var stackView: UIStackView!
     @IBOutlet var addMoodButton: UIButton!
     //Updating the mood buttons
     var moods: [Mood] = [] {
         didSet {
             //Connecting the current mood to the selection
             currentMood = moods.first
-            moodButtons = moods.map { mood in
+            /* moodButtons = moods.map { mood in
                 let moodButton = UIButton()
                 moodButton.setImage(mood.image, for: .normal)
                 moodButton.imageView?.contentMode = .scaleAspectFit
@@ -21,16 +24,25 @@ class MoodSelectionViewController: UIViewController {
                 moodButton.addTarget(self,
                                      action: #selector(moodSelectionChanged(_:)), for: .touchUpInside)
                 return moodButton
-            }
+            } */
+            
+            
+        //Setting the mood selector images
+            moodSelector.images = moods.map { $0.image }
+            //Setting the highlight colors
+            moodSelector.highlightColors = moods.map { $0.color }
         }
     }
     //Updating the stack view’s buttons
+    
+    //Removing the moodButtons property
+    /*
     var moodButtons: [UIButton] = [] {
         didSet {
             oldValue.forEach { $0.removeFromSuperview() }
             moodButtons.forEach { stackView.addArrangedSubview($0)}
         }
-    }
+    } */
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,14 +60,25 @@ class MoodSelectionViewController: UIViewController {
             }
             addMoodButton?.setTitle("I'm \(currentMood.name)", for:
                                         .normal)
-            addMoodButton?.backgroundColor = currentMood.color
+            //addMoodButton?.backgroundColor = currentMood.color
+            //Animating the button’s background color
+            let selectionAnimator = UIViewPropertyAnimator(duration: 0.3, dampingRatio: 0.7) {
+            self.addMoodButton?.backgroundColor =
+            currentMood.color
+            }
+            selectionAnimator.startAnimation()
         }
     }
+    /*
+    // Updating the mood selection action
     @objc func moodSelectionChanged(_ sender: UIButton) {
         guard let selectedIndex = moodButtons.firstIndex(of: sender)
         else {
             preconditionFailure("Unable to find the tapped button in the buttons array.")
         }
+     */
+    @IBAction private func moodSelectionChanged(_ sender:ImageSelector) {
+    let selectedIndex = sender.selectedIndex
         currentMood = moods[selectedIndex]
     }
     
